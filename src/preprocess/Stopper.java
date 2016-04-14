@@ -9,7 +9,7 @@ public class Stopper {
 	
 	public static HashSet<String> words=new HashSet<String>();
 	
-	Stopper(String filename) throws IOException
+	public Stopper(String filename) throws IOException
 	{
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;

@@ -35,7 +35,7 @@ public class Parser {
 		try
 		{
 			System.out.println(System.currentTimeMillis());
-			parseQuestions("data/Posts.xml","data/Questions","data/RawTags");
+			parseQuestions("/Users/Sudeep/Downloads/Posts.xml","data/Questions","data/RawTags");
 			System.out.println(System.currentTimeMillis());
 			parseTags("data/RawTags","data/Tags");
 			System.out.println(System.currentTimeMillis());
@@ -50,7 +50,6 @@ public class Parser {
 
 	public static void parseQuestions(String input,String questions,String tags) throws XMLStreamException, IOException
 	{
-		Stopper st=new Stopper("models/stop");
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 		//inputFactory.setProperty("javax.xml.stream.isCoalescing", True);
 		InputStream in = new FileInputStream(input);
@@ -67,7 +66,6 @@ public class Parser {
         
     	FileWriter fwTags = new FileWriter(tags); 
         BufferedWriter bwTags = new BufferedWriter(fwTags);
-		
 		while (eventReader.hasNext()) {
 			XMLEvent event = eventReader.nextEvent();
 			//reach the start of an question
@@ -122,9 +120,12 @@ public class Parser {
 	private static void write(Question ques, BufferedWriter bw,BufferedWriter bw1) throws IOException {
 		if(ques.isValid()){
 			q++;
-			System.out.println("wrote "+q);
+			if(q%5000==0)
+				System.out.println("wrote "+q);
+			ques.parseBody();
 			bw.write(Constants.START);
-			bw.write(ques.getDate()+Constants.SPACE+ques.getTitle()+Constants.SPACE+ques.getBody()+Constants.SPACE+ques.getTags());
+			bw.write(ques.getDate()+Constants.SPACE+ques.getTitle()+Constants.SPACE+ques.getBody()+Constants.SPACE+ques.getTags()+Constants.SPACE+ques.getCode());
+			//bw.write(ques.getDate()+","+ques.getTitle()+","+ques.getBody()+","+ques.getTags()+","+ques.getCode());
 			bw.write(Constants.END);
 			bw.newLine();
 			
