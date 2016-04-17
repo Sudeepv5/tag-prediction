@@ -1,17 +1,22 @@
 
 jar:
-	(cd src && sbt package)
-	cp src/target/scala-*/cooccurrence_*.jar Cooccurrence.jar
+	gradle build
 
 run:
 	rm -rf data/cooccurrence
 	sbt run
 
+
+
+copy:
+	hadoop fs -put data/Questions-Dev data/
+
 hadoop:
-	rm -rf data/cooccurrence
-	hadoop jar Cooccurrence.jar
+	#rm -rf data/cooccurrence
+	hadoop fs -rm -r data/cooccurrence
+	hadoop jar build/libs/Force.jar extract.Cooccurrence
 
 clean:
-	rm -rf src/project src/target *.jar data/cooccurrence
+	zip -d build/libs/Force.jar META-INF/LICENSE
 
 

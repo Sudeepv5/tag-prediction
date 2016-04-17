@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class Stopper {
 	
-	public static HashSet<String> words=new HashSet<String>();
+	public HashSet<String> words=new HashSet<String>();
 	
 	public Stopper(String filename) throws IOException
 	{
@@ -20,7 +20,7 @@ public class Stopper {
         br.close();
 	}
 	
-	public static boolean isStopWord(String str)
+	public boolean isStopWord(String str)
 	{
 		return words.contains(str);
 	}
