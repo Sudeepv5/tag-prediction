@@ -1,13 +1,9 @@
 package preprocess;
 
-import java.io.IOException;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import util.Constants;
 
 public class Question{
 
@@ -84,7 +80,7 @@ public class Question{
 	private String code;
 	private String tags;
 
-	Question(String date,String body,String title,String tags)
+	public Question(String date,String body,String title,String tags)
 	{
 		this.date=date;
 		this.body=body;
@@ -92,7 +88,7 @@ public class Question{
 		this.tags=tags;
 		this.code="";
 	}
-	Question()
+	public Question()
 	{
 		this.date="";
 		this.body="";

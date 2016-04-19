@@ -1,11 +1,8 @@
 package extract;
 
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -21,11 +18,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LetterTokenizer;
-import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-
 
 import preprocess.Stemmer;
 import preprocess.Stopper;
@@ -40,14 +34,11 @@ public class Cooccurrence {
 		Analyzer analyzer;
 		Stopper st;
 		Stemmer stmr;
-		Pattern p;
-
 
 		public void setup(Context ctx) throws IOException{
 			st=new Stopper("models/stop");
 			stmr=new Stemmer();
 			analyzer = new WDFAnalyzer();
-			p = Pattern.compile("^[0-9a-z\\-]", Pattern.CASE_INSENSITIVE);
 		}
 
 		private static class WDFAnalyzer extends Analyzer { 

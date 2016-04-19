@@ -35,9 +35,9 @@ public class Parser {
 		try
 		{
 			System.out.println(System.currentTimeMillis());
-			parseQuestions("/Users/Sudeep/Downloads/Posts.xml","data/Questions","data/RawTags");
+			parseQuestions();
 			System.out.println(System.currentTimeMillis());
-			parseTags("data/RawTags","data/Tags");
+			parseTags();
 			System.out.println(System.currentTimeMillis());
 		}
 		catch(Exception ex)
@@ -48,23 +48,23 @@ public class Parser {
 	}
 
 
-	public static void parseQuestions(String input,String questions,String tags) throws XMLStreamException, IOException
+	public static void parseQuestions() throws XMLStreamException, IOException
 	{
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 		//inputFactory.setProperty("javax.xml.stream.isCoalescing", True);
-		InputStream in = new FileInputStream(input);
+		InputStream in = new FileInputStream(Constants.POSTS_FILE);
 		XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
 
-		FileWriter fwTrain = new FileWriter(questions+"-Train"); 
+		FileWriter fwTrain = new FileWriter(Constants.QUES_TRAIN); 
 		BufferedWriter bwTrain = new BufferedWriter(fwTrain);
 
-		FileWriter fwTest = new FileWriter(questions+"-Test"); 
+		FileWriter fwTest = new FileWriter(Constants.QUES_TEST); 
 		BufferedWriter bwTest = new BufferedWriter(fwTest);
 
-		FileWriter fwDev = new FileWriter(questions+"-Dev"); 
+		FileWriter fwDev = new FileWriter(Constants.QUES_DEV); 
 		BufferedWriter bwDev = new BufferedWriter(fwDev);
 
-		FileWriter fwTags = new FileWriter(tags); 
+		FileWriter fwTags = new FileWriter(Constants.RW_TAG_FILE); 
 		BufferedWriter bwTags = new BufferedWriter(fwTags);
 		while (eventReader.hasNext()) {
 			XMLEvent event = eventReader.nextEvent();
@@ -135,8 +135,8 @@ public class Parser {
 	}
 
 
-	private static void parseTags(String rtagfile, String tagfile) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(rtagfile));
+	private static void parseTags() throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(Constants.RW_TAG_FILE));
 		String line;
 		HashMap<String,Integer> allTags=new HashMap<String,Integer>();
 		while ((line = br.readLine()) != null) {
@@ -159,7 +159,7 @@ public class Parser {
 		});
 
 
-		FileWriter fw = new FileWriter(tagfile); 
+		FileWriter fw = new FileWriter(Constants.TAG_FILE); 
 		BufferedWriter bw = new BufferedWriter(fw);
 
 		for(Map.Entry<String,Integer> tag: sorted)
