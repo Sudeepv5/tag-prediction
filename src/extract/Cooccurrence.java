@@ -47,7 +47,6 @@ public class Cooccurrence {
 				Tokenizer src = new LetterTokenizer(); 
 				int flags = 0; 
 				flags |= WordDelimiterFilter.GENERATE_WORD_PARTS; 
-				flags |= WordDelimiterFilter.SPLIT_ON_CASE_CHANGE; 
 				flags |= WordDelimiterFilter.SPLIT_ON_NUMERICS; 
 				TokenStream tok = new WordDelimiterFilter(src, flags, null); 
 				return new TokenStreamComponents(src, tok); 
@@ -97,10 +96,7 @@ public class Cooccurrence {
 					context.write(new Text(tag+Constants.SPACE+word), one);
 				}
 			}
-
 		}
-
-
 	}
 
 
