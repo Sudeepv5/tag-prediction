@@ -101,9 +101,9 @@ public class Parser {
 						}
 					}
 					//System.out.println(ques.getDate()+"\t"+ques.getTitle()+"\t"+ques.getBody()+"\t"+ques.getTags());
-					if(q<1000)
+					if(q<5000)
 						write(ques,bwDev,bwTags);
-					else if(q<1131000)
+					else if(q<3005000)
 						write(ques,bwTest,bwTags);
 					else
 						write(ques,bwTrain,bwTags);

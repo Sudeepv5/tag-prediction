@@ -33,7 +33,7 @@ public class KNNModel extends CooccurrenceModel{
 	public static void main(String[] args) throws IOException, ParseException {
 		
 		KNNModel knn=new KNNModel();
-		Question ques=new Question("","How do I sort Lucene results by field value using a HitCollector?","I'm using the following code to execute a query in Lucene.Net How do I sort these search results based on a field? I had tried using TopFieldDocCollector but I got an error saying, value is too small or too large when i passed 5000 as numHits argument value. Please suggest a valid value to pass.","");
+		Question ques=new Question("","Type mismatch for Class Generics","<p>I have the following code that won't compile and although there is a way to make it compile I want to understand why it isn't compiling. Can someone enlighten me as to specifically why I get the error message I will post at the end please? By casting Test.class to Class<T> this compiles with an Unchecked cast warning and runs perfectly. </p>","");
 		knn.setQues(ques);
 		
 		knn.getTags();
@@ -43,26 +43,15 @@ public class KNNModel extends CooccurrenceModel{
 	
 public List<Map.Entry<String,Double>> getTags() throws IOException, ParseException {
 		
-		ques.parseBody();
-		
-		HashMap<String,Integer> qWords=super.loadWordsInQues(ques);
 		List<Map.Entry<String,Double>>candTags=super.getTags();
 		HashMap<String,Double> tagProbs=new HashMap<String,Double>();
 		
 		for(Map.Entry<String, Double> me : candTags)
 		{
 			System.out.println(me.getKey()+" "+me.getValue());
-			double numer=0,denom1=0,denom2=0;
-			for(Entry<String,Integer> word:qWords.entrySet())
-			{
-				double tagwordCount=getCount(me.getKey(),word.getKey());
-				numer+=tagwordCount*word.getValue();
-				denom1+=tagwordCount*tagwordCount;
-				denom2+=word.getValue()*word.getValue();
-				System.out.print(word.getKey()+" "+word.getValue());
-			}
-			double simmi=numer/(Math.sqrt(denom1)*Math.sqrt(denom2));
-			tagProbs.put(me.getKey(), simmi);
+			double distance=coSineDistance(me.getKey(),quesWords);
+			//double distance=euclidDistance(me.getKey(),qWords);
+			tagProbs.put(me.getKey(), distance);
 		}
 	
 		List<Map.Entry<String,Double>> sorted = new LinkedList<Map.Entry<String,Double>>(tagProbs.entrySet());
@@ -77,6 +66,39 @@ public List<Map.Entry<String,Double>> getTags() throws IOException, ParseExcepti
 			System.out.println(me.getKey()+" "+me.getValue());
 		}
 		return sorted;
+	}
+
+	public double coSineDistance(String key,HashMap<String,Integer> qWords) throws IOException
+	{
+		double numer=0.0,denom1=0.0,denom2=0.0;
+		for(Entry<String,Integer> word:qWords.entrySet())
+		{
+			double tagwordCount=getCount(key,word.getKey());
+			numer+=tagwordCount*word.getValue();
+			denom1+=tagwordCount*tagwordCount;
+			denom2+=word.getValue()*word.getValue();
+			//System.out.print(word.getKey()+" "+word.getValue()+" ");
+		}
+		double simmi=numer/(Math.sqrt(denom1)*Math.sqrt(denom2));
+		return simmi;
+	}
+	
+	public double euclidDistance(String key,HashMap<String,Integer> qWords) throws IOException
+	{
+		double dist=0.0;
+		double tagCount=getCount("TTaagg",key);
+		//double wordCount=qWords.size();
+		for(Entry<String,Integer> word:qWords.entrySet())
+		{
+			//Normalize and find euclid dist
+			double tagwordCount=getCount(key,word.getKey());
+			double wordCount=getCount("WWoorrdd",word.getKey());
+			double diff=(tagwordCount/wordCount)-(word.getValue()/wordCount);
+			dist+=Math.pow(diff,2);
+
+		}
+		dist=Math.sqrt(dist);
+		return dist;
 	}
 
 

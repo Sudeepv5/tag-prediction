@@ -39,13 +39,14 @@ import util.Constants;
 
 public class CooccurrenceModel {
 	
-	Question ques;
-	public Question getQues() {
-		return ques;
+	HashMap<String,Integer> quesWords;
+	
+	public HashMap<String,Integer> getQues() {
+		return quesWords;
 	}
 
-	public void setQues(Question ques) {
-		this.ques = ques;
+	public void setQues(Question ques) throws IOException {
+		this.quesWords = loadWordsInQues(ques);
 	}
 
 	HashMap<String,Integer> allTags=new HashMap<String,Integer>();
@@ -69,8 +70,6 @@ public class CooccurrenceModel {
 		protected TokenStreamComponents createComponents(String fieldName) { 
 			Tokenizer src = new LetterTokenizer(); 
 			int flags = 0; 
-			flags |= WordDelimiterFilter.GENERATE_WORD_PARTS; 
-			flags |= WordDelimiterFilter.SPLIT_ON_CASE_CHANGE; 
 			flags |= WordDelimiterFilter.SPLIT_ON_NUMERICS; 
 			TokenStream tok = new WordDelimiterFilter(src, flags, null); 
 			return new TokenStreamComponents(src, tok); 
@@ -79,7 +78,7 @@ public class CooccurrenceModel {
 	
 	public static void main(String[] args) throws ParseException, IOException {
 		
-		Question ques=new Question("","How do I sort Lucene results by field value using a HitCollector?","I'm using the following code to execute a query in Lucene.Net How do I sort these search results based on a field?","");
+		Question ques=new Question("","How do I sort Lucene results by field value using a HitCollector?","<p>I'm using the following code to execute a query in Lucene.Net How do I sort these search results based on a field?</p>","");
 		CooccurrenceModel cm=new CooccurrenceModel();
 		cm.setQues(ques);
 		
@@ -94,15 +93,13 @@ public class CooccurrenceModel {
 
 	public List<Map.Entry<String,Double>> getTags() throws IOException, ParseException 
 	{
-		ques.parseBody();
-		HashMap<String,Integer> qWords=loadWordsInQues(ques);
 		HashMap<String,Double> tagProbs=new HashMap<String,Double>();
-		System.out.println("strted");
+		//System.out.println("strted");
 
 		for(Map.Entry<String, Integer> me : allTags.entrySet())
 		{
 			double pTagGivenWord=-1;
-			for(Entry<String,Integer> word:qWords.entrySet())
+			for(Entry<String,Integer> word:quesWords.entrySet())
 			{
 				double wordCount=getCount("WWoorrdd",word.getKey());
 				double tagwordCount=getCount(me.getKey(),word.getKey());
@@ -121,7 +118,7 @@ public class CooccurrenceModel {
 			}
 		});
 		
-		return sorted.subList(0, 20);
+		return sorted.subList(0, 30);
 	}
 	
 	public double getCount(String tag,String word) throws IOException
@@ -140,8 +137,8 @@ public class CooccurrenceModel {
 	public HashMap<String,Integer> loadWordsInQues(Question ques) throws IOException {
 		
 		HashMap<String,Integer> words=new HashMap<String,Integer>();
-		
-		TokenStream ts = analyzer.tokenStream("myfield", new StringReader(ques.getBody()+ques.getTitle()));
+		ques.parseBody();
+		TokenStream ts = analyzer.tokenStream("myfield", new StringReader(ques.getTitle()+ques.getBody()));
 		CharTermAttribute ta = ts.addAttribute(CharTermAttribute.class);
 
 		try{

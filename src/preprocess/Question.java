@@ -80,7 +80,7 @@ public class Question{
 	private String code;
 	private String tags;
 
-	public Question(String date,String body,String title,String tags)
+	public Question(String date,String title,String body,String tags)
 	{
 		this.date=date;
 		this.body=body;

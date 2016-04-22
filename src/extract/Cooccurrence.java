@@ -46,7 +46,6 @@ public class Cooccurrence {
 			protected TokenStreamComponents createComponents(String fieldName) { 
 				Tokenizer src = new LetterTokenizer(); 
 				int flags = 0; 
-				flags |= WordDelimiterFilter.GENERATE_WORD_PARTS; 
 				flags |= WordDelimiterFilter.SPLIT_ON_NUMERICS; 
 				TokenStream tok = new WordDelimiterFilter(src, flags, null); 
 				return new TokenStreamComponents(src, tok); 
@@ -60,17 +59,18 @@ public class Cooccurrence {
 			String line =value.toString().substring(Constants.START.length(),len-Constants.END.length());
 			//System.out.println(line);
 			String[] ques=line.split(Constants.SPACE);
+			TokenStream ts=analyzer.tokenStream("myfield", new StringReader(""));
+			try
+			{
+				
+				String body=ques[1]+ques[2];
+				String[] tags=ques[3].substring(1,ques[3].length()-1).split("><");
 
-			String body=ques[1]+ques[2];
-			String[] tags=ques[3].substring(1,ques[3].length()-1).split("><");
+				ArrayList<String> words=new ArrayList<String>();
 
-			ArrayList<String> words=new ArrayList<String>();
+				ts = analyzer.tokenStream("myfield", new StringReader(body));
 
-			TokenStream ts = analyzer.tokenStream("myfield", new StringReader(body));
-
-			CharTermAttribute ta = ts.addAttribute(CharTermAttribute.class);
-
-			try{
+				CharTermAttribute ta = ts.addAttribute(CharTermAttribute.class);
 				ts.reset(); 
 				while (ts.incrementToken()) {
 					String word=ta.toString().toLowerCase();
@@ -82,19 +82,24 @@ public class Cooccurrence {
 					}
 				}
 				ts.end();
+
+				for(String tag:tags)
+				{
+					context.write(new Text("TTaagg"+Constants.SPACE+tag), one);
+					for(String word:words)
+					{
+						context.write(new Text(tag+Constants.SPACE+word), one);
+					}
+				}
 			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			
 			finally
 			{
 				ts.close();
-			}
-
-			for(String tag:tags)
-			{
-				context.write(new Text("TTaagg"+Constants.SPACE+tag), one);
-				for(String word:words)
-				{
-					context.write(new Text(tag+Constants.SPACE+word), one);
-				}
 			}
 		}
 	}
