@@ -78,7 +78,7 @@ public class CooccurrenceModel {
 	
 	public static void main(String[] args) throws ParseException, IOException {
 		
-		Question ques=new Question("","How do I sort Lucene results by field value using a HitCollector?","<p>I'm using the following code to execute a query in Lucene.Net How do I sort these search results based on a field?</p>","");
+		Question ques=new Question("","Chrome Extension: how to change origin in AJAX request header?","<p>I'm trying to manually set an origin in an ajax request header. In my background.js, I have thisAs you can see, the origin is changed. But when this Chrome extension get executed, the origin gets override to chrome-extension://iphajdjhoofhlpldiilkujgommcolacc and the console gives error 'Refused to set unsafe header \"origin\"'I've followed Chrome API (http://developer.chrome.com/extensions/xhr.html), and already set the permission as followsDoes anyone know how to properly set the origin in header? Thanks!.</p>","");
 		CooccurrenceModel cm=new CooccurrenceModel();
 		cm.setQues(ques);
 		
@@ -99,15 +99,19 @@ public class CooccurrenceModel {
 		for(Map.Entry<String, Integer> me : allTags.entrySet())
 		{
 			double pTagGivenWord=-1;
+			String mainWord="";
 			for(Entry<String,Integer> word:quesWords.entrySet())
 			{
 				double wordCount=getCount("WWoorrdd",word.getKey());
 				double tagwordCount=getCount(me.getKey(),word.getKey());
+				
 				if(wordCount>0 && pTagGivenWord<(tagwordCount/wordCount))
 				{
 					pTagGivenWord=tagwordCount/wordCount;
+					mainWord=word.getKey();
 				}
 			}
+			//System.out.println("Main word:" +me.getKey() +": "+mainWord);
 			tagProbs.put(me.getKey(), pTagGivenWord);
 		}
 	
@@ -118,7 +122,11 @@ public class CooccurrenceModel {
 			}
 		});
 		
-		return sorted.subList(0, 30);
+//		for(Map.Entry<String, Double> me:sorted){
+//			System.out.println(me.getKey()+" "+me.getValue());
+//		}
+		
+		return sorted.subList(0, 20);
 	}
 	
 	public double getCount(String tag,String word) throws IOException
@@ -133,19 +141,25 @@ public class CooccurrenceModel {
 		double count=(hits.totalHits>0)?Double.parseDouble(doc.get("name")):0.0;
 		return count;
 	}
+	
+	//gets the number of unique tags the word is related to
+	public double getDocCount(String word) throws IOException {
+		Query query = new TermQuery(new Term("wt","DDoocc"+Constants.SPACE+word));
+		TopDocs hits=indexSearcher.search(query,50000);
+		return hits.totalHits;
+	}
 
 	public HashMap<String,Integer> loadWordsInQues(Question ques) throws IOException {
 		
 		HashMap<String,Integer> words=new HashMap<String,Integer>();
 		ques.parseBody();
-		TokenStream ts = analyzer.tokenStream("myfield", new StringReader(ques.getTitle()+ques.getBody()));
+		TokenStream ts = analyzer.tokenStream("myfield", new StringReader(ques.getTitle()+" "+ques.getBody()));
 		CharTermAttribute ta = ts.addAttribute(CharTermAttribute.class);
 
 		try{
 			ts.reset(); 
 			while (ts.incrementToken()) {
 				String word=ta.toString().toLowerCase();
-				
 				if(!st.isStopWord(word) && word.length()>1){
 					word=stmr.stem(word);
 					if(words.containsKey(word))
@@ -183,6 +197,24 @@ public class CooccurrenceModel {
 			e.printStackTrace();
 		}
 		return allTags;
+	}
+	
+	public void allWords() {
+		BufferedReader br;
+		long fCount=0;
+		try 
+		{
+			br = new BufferedReader(new FileReader(Constants.TAG_FILE));
+			String line;
+			while ((line = br.readLine()) != null) {
+				String tag=line.split(",")[0];
+				fCount+=getCount("TTeerrmm",tag);
+			}
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(fCount);
 	}
 
 }

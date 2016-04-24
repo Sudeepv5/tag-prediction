@@ -16,4 +16,7 @@ public class Constants {
 	public static final String WORD_TAG_INDEX="data/WordTag-Index";
 	
 	public static final String COOC_MATRIX="cooccurrence/part-r-00000";
+	
+	public static final double TAG_COUNT=41993.0;
+	public static final double WORD_COUNT_TEST=506324114;
 }

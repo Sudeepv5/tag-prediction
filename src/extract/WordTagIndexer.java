@@ -39,13 +39,28 @@ public class WordTagIndexer {
 			
 		    doc.add(new StringField("wt", wtline[0], Field.Store.YES));
 		    doc.add(new StringField("name", wtline[1], Field.Store.YES));
+		    
 		    indexWriter.addDocument(doc);
+		    String[] terms=wtline[0].split(Constants.SPACE);
+		    if(!terms[0].equals("TTaagg") && !terms[0].equals("WWoorrdd"))
+		    {
+		    	doc.add(new StringField("wt", "DDoocc"+Constants.SPACE+terms[1], Field.Store.YES));
+		    	doc.add(new StringField("name", "Doc", Field.Store.YES));
+		    	indexWriter.addDocument(doc);
+		    }
+		    
 		}
+		
+		
+		
+		
 		br.close();
 		
 		System.out.println("index written"+ indexWriter.numDocs());
 		indexWriter.close();
 	}
+	
+	
 	
 	
 

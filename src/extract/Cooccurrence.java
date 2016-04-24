@@ -3,6 +3,7 @@ package extract;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -62,11 +63,11 @@ public class Cooccurrence {
 			TokenStream ts=analyzer.tokenStream("myfield", new StringReader(""));
 			try
 			{
-				
-				String body=ques[1]+ques[2];
+				String body=ques[1]+" "+ques[2];
 				String[] tags=ques[3].substring(1,ques[3].length()-1).split("><");
 
 				ArrayList<String> words=new ArrayList<String>();
+				HashSet<String> uniWords=new HashSet<String>();
 
 				ts = analyzer.tokenStream("myfield", new StringReader(body));
 
@@ -78,6 +79,7 @@ public class Cooccurrence {
 					if(!st.isStopWord(word) && word.length()>1){
 						word=stmr.stem(word);
 						words.add(word);
+						uniWords.add(word);
 						context.write(new Text("WWoorrdd"+Constants.SPACE+word), one);
 					}
 				}
@@ -85,6 +87,7 @@ public class Cooccurrence {
 
 				for(String tag:tags)
 				{
+					context.write(new Text("TTeerrmm"+Constants.SPACE+tag), new IntWritable(words.size()));
 					context.write(new Text("TTaagg"+Constants.SPACE+tag), one);
 					for(String word:words)
 					{
