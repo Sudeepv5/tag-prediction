@@ -47,7 +47,7 @@ public List<Map.Entry<String,Double>> getTags() throws IOException, ParseExcepti
 				double qf=word.getValue();
 				double df=getDocCount(word.getKey());
 				//double weight=computeBM25Score(tf,Constants.TAG_COUNT,docLen,avgdl,qf,df);
-				double weight=computeTfIdfScore(tf,Constants.TAG_COUNT,df);
+				double weight=computeTfIdfScore(tf/docLen,Constants.TAG_COUNT,df);
 				
 				
 				//if(score<pScore)
@@ -67,9 +67,9 @@ public List<Map.Entry<String,Double>> getTags() throws IOException, ParseExcepti
 //		for(Map.Entry<String, Double> me:sorted){
 //			System.out.println(me.getKey()+" "+me.getValue());
 //		}
-		candTags=candTags.subList(0, 3);
+		candTags=candTags.subList(0, 2);
 		candTags.add(sorted.get(0));
-		//candTags.add(sorted.get(1));
+		candTags.add(sorted.get(1));
 		return candTags;
 	}
 
